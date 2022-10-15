@@ -1,62 +1,90 @@
-//Input - Index of monotonic number
-//Output - monotonic number
 import java.util.Scanner;
 
 public class Main {
 
+    public static void main(String[] args) {
+        int num = readNumber();
+
+        if (num < 101) {
+            writeNumberLessThan101(num);
+        } else {
+            int number = findNumberMoreThan101(num);
+            writeNumberMoreThan101(number);
+        }
+    }
+
     static int readNumber() {
+        int n;
+
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Write index: ");
-        return scanner.nextInt();
-    }
 
+        System.out.println("Введите индекс монотонного числа который хотите найти: ");
+        System.out.print("n = ");
 
-    public static boolean isMonotonic(int num) {
-       int n = num;
-       int b = n % 10 - (n/10)%10;
-       n/=10;
-       if(n < 10) return true;
-       while(n > 0 && n > b){
-           if(n % 10 - (n/10)%10 != b){
-               return false;
-           }
-           n/=10;
-       }
-       return true;
-    }
-
-
-
-
-
-
-
-
-    static int functionForCountNumbers(){
-        int index = readNumber();
-        while (index < 0) {
-                 System.out.println("number shouldn't be negative");
-                 index = readNumber();
+        while (!scanner.hasNextInt()) {
+            System.out.println("Invalid input. Re-enter the index.");
+            System.out.print("n = ");
+            scanner.next();
         }
-        if (index < 100) return index;
-        int count = 100;
-        int candidate = 123; // the first monotonic number, which should correspond to n = 100
 
-        while (count < index) {
-            if (isMonotonic(candidate)) {
-                count++;
+        n = scanner.nextInt();
+
+        if (n <= 0) {
+            System.out.println("Invalid input. Re-enter the index.");
+            return readNumber();
+        }
+        return n;
+    }
+
+    static int findNumberMoreThan101(double num) {
+        int k = 100;
+        int number = 100;
+        while (k != num) {
+            boolean a = checkMonotonicityOfNumber(number);
+            if (a) {
+                ++k;
             }
-            candidate++;
-
+            ++number;
         }
-
-        return candidate;
+        return number;
     }
 
-
-
-    public static void main(String[] args){
-        System.out.println(functionForCountNumbers());
+    static void writeNumberLessThan101(int num) {
+        System.out.println("n-th monotone integer = " + (num - 1));
     }
 
+    static void writeNumberMoreThan101(int number) {
+        System.out.println("n-th monotone integer = " + number);
+    }
+
+    public static boolean checkMonotonicityOfNumber(int number) {
+        Monotone monotone = Monotone.Equals;
+
+        for (int next, previous = number % 10; (number /= 10) != 0; previous = next) {
+            next = number % 10;
+
+            switch (monotone) {
+                case Equals -> {
+                    if (next > previous) {
+                        monotone = Monotone.Ascending;
+                    } else if (next < previous) {
+                        monotone = Monotone.Descending;
+                    }
+                }
+
+                case Ascending -> {
+                    if (next < previous) {
+                        return false;
+                    }
+                }
+
+                case Descending -> {
+                    if (next > previous) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
 }
