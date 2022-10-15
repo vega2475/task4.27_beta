@@ -42,9 +42,9 @@ public class Main {
         while (k != num) {
             boolean a = checkMonotonicityOfNumber(number);
             if (a) {
-                ++k;
+                k++;
             }
-            ++number;
+            number++;
         }
         return number;
     }
