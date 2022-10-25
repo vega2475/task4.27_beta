@@ -1,90 +1,89 @@
 import java.util.Scanner;
+import java.lang.Math;
 
 public class Main {
 
     public static void main(String[] args) {
-        int num = readNumber();
-
-        if (num < 101) {
-            writeNumberLessThan101(num);
-        } else {
-            int number = findNumberMoreThan101(num);
-            writeNumberMoreThan101(number);
-        }
+        System.out.println( "test value --->  " + isMonotonic(testReandNumber()));//test
+        System.out.println("Монотонное число --> " + functionForCountNumbers());
     }
 
     static int readNumber() {
-        int n;
-
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Введите индекс монотонного числа который хотите найти: ");
-        System.out.print("n = ");
-
-        while (!scanner.hasNextInt()) {
-            System.out.println("Invalid input. Re-enter the index.");
-            System.out.print("n = ");
-            scanner.next();
-        }
-
-        n = scanner.nextInt();
-
-        if (n <= 0) {
-            System.out.println("Invalid input. Re-enter the index.");
-            return readNumber();
-        }
-        return n;
+        Scanner scn = new Scanner(System.in);
+        System.out.println(" Введите индекс n ");
+        return scn.nextInt();
     }
 
-    static int findNumberMoreThan101(double num) {
-        int k = 100;
-        int number = 100;
-        while (k != num) {
-            boolean a = checkMonotonicityOfNumber(number);
-            if (a) {
-                k++;
+    static int testReandNumber(){
+        Scanner scn = new Scanner(System.in);
+        System.out.print(" Введите тестовое значение для проверки на монотонность ");
+        return scn.nextInt();
+    }
+
+    public static int functionForCountNumbers() {
+        int n = readNumber();
+
+
+        while (n < 0) {
+            System.out.println("number shouldn't be negative");
+            n = readNumber();
+        }
+
+        if (n <= 100) return n;
+
+        int count = 100;
+        int candidate = 100; // the first monotonic number, which should correspond to n = 100
+
+        while (count < n) {
+
+            if (isMonotonic(candidate)) count++;
+            candidate++;
+        }
+
+        return candidate;
+    }
+
+    public static boolean isMonotonic(int num) {
+
+        // NOTE: use Math.abs() to adjust the input if negative values are allowed
+
+        if (num <= 99) return true; // early kill for small number
+
+        int last = num % 10;
+        int first = num / (int) Math.pow(10, (int) Math.log10(num));
+
+        int prev = last;
+        num /= 10;
+
+        boolean isEqual = isEqual(first, last);
+        boolean isIncreasing = isIncreasing(first, last);
+        boolean isDeceasing = isDecreasing(first, last);
+
+        while (num > 0) {
+            int next = num % 10;
+
+            if (isEqual && !isEqual(next, prev)) return false; // next is passed before previous because we are iterating from right to left
+
+            if (isIncreasing != isIncreasing(next, prev) && isDeceasing != isDecreasing(next, prev)) {
+                return false;
             }
-            number++;
+
+            prev = next;
+            num /= 10;
         }
-        return number;
+
+        return true; // the number is proved to be monotonic
     }
 
-    static void writeNumberLessThan101(int num) {
-        System.out.println("n-th monotone integer = " + (num - 1));
+    public static boolean isEqual(int left, int right) {
+        return left == right;
     }
 
-    static void writeNumberMoreThan101(int number) {
-        System.out.println("n-th monotone integer = " + number);
+    public static boolean isIncreasing(int left, int right) {
+        return left <= right;
     }
 
-    public static boolean checkMonotonicityOfNumber(int number) {
-        Monotone monotone = Monotone.Equals;
-
-        for (int next, previous = number % 10; (number /= 10) != 0; previous = next) {
-            next = number % 10;
-
-            switch (monotone) {
-                case Equals -> {
-                    if (next > previous) {
-                        monotone = Monotone.Ascending;
-                    } else if (next < previous) {
-                        monotone = Monotone.Descending;
-                    }
-                }
-
-                case Ascending -> {
-                    if (next < previous) {
-                        return false;
-                    }
-                }
-
-                case Descending -> {
-                    if (next > previous) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
+    public static boolean isDecreasing(int left, int right) {
+        return left >= right;
     }
 }
