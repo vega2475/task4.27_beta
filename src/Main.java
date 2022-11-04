@@ -31,13 +31,14 @@ public class Main {
 
         if (n <= 100) return n;
 
-        int count = 100;
-        int candidate = 100; // the first monotonic number, which should correspond to n = 100
+        int count = 99;
+        int candidate = 99; // the first monotonic number, which should correspond to n = 100
 
         while (count < n) {
-
-            if (isMonotonic(candidate)) count++;
             candidate++;
+            if (isMonotonic(candidate)) count++;
+
+
         }
 
         return candidate;
